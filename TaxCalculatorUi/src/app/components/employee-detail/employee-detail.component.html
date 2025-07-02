@@ -1,0 +1,146 @@
+<div class="container-fluid py-4">
+  <!-- Loading State -->
+  @if(loading()) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading employee details...</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if(error()){
+  <div class="alert alert-danger" role="alert">
+    {{ error() }}
+  </div>
+  }
+
+  <!-- Employee Details -->
+  @if(!loading() && !error() && employee()){
+  <div class="row">
+    <!-- Employee Info Card -->
+    <div class="col-12 mb-4">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="row align-items-start">
+            <div class="col-md-8">
+              <h1 class="display-5 mb-3">
+                {{ employeeName() }}
+              </h1>
+              <div class="list-group-item d-flex justify-content-between w-50">
+                <span class="fw-medium">Gross Annual Salary:</span>
+                <span
+                  >{{ taxCalculation()?.grossAnnualSalary | currency : "GBP" }}
+                  <img
+                    (click)="openEditDialog()"
+                    src="/editing.png"
+                    alt="Edit Salary"
+                    style="width: 24px"
+                  />
+                </span>
+              </div>
+              <hr />
+              <div class="list-group list-group-flush">
+                <div
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  <span class="fw-medium">Gross Annual Salary:</span>
+                  <span>{{
+                    taxCalculation()?.grossAnnualSalary | currency : "GBP"
+                  }}</span>
+                </div>
+                <div
+                  class="list-group-item d-flex justify-content-between align-items-center">
+                  <span class="fw-medium">Gross Monthly Salary:</span>
+                  <span>{{
+                    taxCalculation()?.grossMonthlySalary | currency : "GBP"
+                  }}</span>
+                </div>
+                <div class="list-group list-group-flush">
+                  <div
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-medium">Net Annual Salary:</span>
+                    <span>{{
+                      taxCalculation()?.netAnnualSalary | currency : "GBP"
+                    }}</span>
+                  </div>
+                  <div
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-medium">Net Monthly Salary:</span>
+                    <span>{{
+                      taxCalculation()?.netMonthlySalary | currency : "GBP"
+                    }}</span>
+                  </div>
+                  <div
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-medium">Annual Tax Paid:</span>
+                    <span>{{
+                      taxCalculation()?.annualTaxPaid | currency : "GBP"
+                    }}</span>
+                  </div>
+                  <div
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-medium">Monthly Tax Paid:</span>
+                    <span>{{
+                      taxCalculation()?.monthlyTaxPaid | currency : "GBP"
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Edit Salary Modal -->
+  @if(showEditDialog()){
+  <div
+    class="modal fade show d-block"
+    tabindex="-1"
+    style="background-color: rgba(0, 0, 0, 0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="newSalary" class="form-label">
+              Current Value:
+              {{ taxCalculation()?.grossAnnualSalary | currency : "GBP" }}
+            </label>
+            <input
+              type="number"
+              id="newSalary"
+              [ngModel]="newSalary()"
+              (ngModelChange)="newSalary.set($event)"
+              class="form-control form-control-lg"
+              placeholder="Enter new salary"
+            />
+          </div>
+        </div>
+        <div class="modal-footer justify-content-start">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="saveSalary()"
+            [disabled]="!canSaveSalary() || updating()">
+            <span
+              *ngIf="updating()"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"></span>
+            {{ updating() ? "Saving..." : "Save" }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>

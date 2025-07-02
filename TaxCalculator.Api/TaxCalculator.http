@@ -1,0 +1,31 @@
+@TaxCalculator_HostAddress = http://localhost:5151
+
+### Get employees with paging parameters
+GET {{TaxCalculator_HostAddress}}/api/v1.0/employees?pageNumber=1&pageSize=5
+Accept: application/json
+
+###
+
+### Get employees with search and paging
+GET {{TaxCalculator_HostAddress}}/api/v1.0/employees?pageNumber=1&pageSize=10&searchTerm=smith
+Accept: application/json
+
+###
+
+### Get specific employee by ID
+GET {{TaxCalculator_HostAddress}}/api/v1.0/employee/168893d5-ad56-4b4a-96d3-3097524996d2
+Accept: application/json
+
+###
+
+### Update employee salary
+PUT {{TaxCalculator_HostAddress}}/api/v1.0/employee/168893d5-ad56-4b4a-96d3-3097524996d2?salary=75000
+Accept: application/json
+
+###
+
+### Calculate tax for specific salary
+GET {{TaxCalculator_HostAddress}}/api/v1.0/tax/calculate/40000
+Accept: application/json
+
+
