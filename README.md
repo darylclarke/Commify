@@ -7,9 +7,8 @@ A full-stack Tax Calculator application built with ASP.NET Core (Minimal API, EF
 - Employee management (list, detail, update salary)
 - In-memory caching for tax bands
 - Error handling and logging
-- Heath checks
+- Health checks
 - Modern Angular UI with signals and standalone components
-- API versioning and clean architecture
 
 ## Tech Stack
 - **Backend:** .NET 9, ASP.NET Core Minimal API, Entity Framework Core (SQLite), Serilog
