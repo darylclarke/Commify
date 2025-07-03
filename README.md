@@ -28,4 +28,5 @@ A full-stack Tax Calculator application built with ASP.NET Core (Minimal API, EF
 - CORS configured for local development.
 - Logging is handled by Serilog (see `logs/`).
 - No authentication due to limted time.
+- Low test coverage also due to time.
 ---
