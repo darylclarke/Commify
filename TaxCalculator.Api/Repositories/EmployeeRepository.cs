@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using TaxCalculator.Api.Data;
 using TaxCalculator.Api.DTOs;
 using TaxCalculator.Api.Models;
-using Microsoft.Extensions.Logging;
 
 namespace TaxCalculator.Api.Repositories;
 
@@ -27,9 +26,7 @@ public class EmployeeRepository : IEmployeeRepository
         if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
         {
             var searchTerm = parameters.SearchTerm.ToLower();
-            query = query.Where(e => 
-                e.FirstName.ToLower().Contains(searchTerm) || 
-                e.LastName.ToLower().Contains(searchTerm));
+            query = query.Where(u => EF.Functions.Like(u.FullName.ToLower(), $"%{searchTerm}%"));
         }
 
         var totalCount = await query.CountAsync();

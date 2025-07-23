@@ -15,7 +15,11 @@ public static class ApplicationServicesExtensions
         var sqlConnectionString = configuration.GetConnectionString("DBConnection") ??
                                   throw new Exception("DBConnection is missing");
 
-        services.AddDbContext<ApplicationDbContext>(opt => { opt.UseSqlite(sqlConnectionString); });
+        services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        {
+            options.UseSqlite(sqlConnectionString);
+        });
+
         services.AddMemoryCache();
         services.AddHealthChecks()
             .AddSqlite(sqlConnectionString)
@@ -32,7 +36,8 @@ public static class ApplicationServicesExtensions
             options.AddDefaultPolicy(policy =>
             {
                 policy.WithOrigins(allowedOrigins ?? [])
-                      .WithMethods("PUT", "GET");
+                      .WithMethods("PUT", "GET")
+                      .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
             });
         });
 
@@ -41,19 +46,5 @@ public static class ApplicationServicesExtensions
         services.Configure<CacheSettings>(configuration.GetSection("CacheSettings"));
 
         return services;
-    }
-
-    public static async Task MigrateAndSeedDatabaseAsync(this IHost app)
-    {
-        using var scope = app.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        db.Database.Migrate();
-        var seeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
-        await seeder.SeedTaxBandsAsync();
-        var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
-        if (env.IsDevelopment())
-        {
-            await seeder.SeedEmployeesAsync();
-        }
     }
 }

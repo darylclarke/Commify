@@ -1,82 +1,93 @@
-import { Component, signal, computed, effect, inject } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EmployeeService } from '../../services/employee.service';
 import { Employee } from '../../models/employee.model';
 import { PagedResult } from '../../models/paged-result.model';
 import { EmployeeQueryParameters } from '../../models/employee-query-parameters.model';
+import {
+  switchMap,
+  tap,
+  distinctUntilChanged,
+  debounceTime,
+} from 'rxjs/operators';
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './employee-list.component.html',
 })
-export class EmployeeListComponent {
+export class EmployeeListComponent implements OnInit {
   private employeeService = inject(EmployeeService);
   private router = inject(Router);
 
-  employees = signal<Employee[]>([]);
-  pagedResult = signal<PagedResult<Employee> | undefined>(undefined);
+  searchControl = new FormControl('');
+  pageSize = 10;
+
   loading = signal(false);
-  error = signal('');
+  employees = signal<Employee[]>([]);
+  pagedResult = signal<PagedResult<Employee> | null>(null);
+  error = signal<string | null>(null);
 
-  searchTerm = signal('');
-  currentPage = signal(1);
-  pageSize = signal(5);
+  constructor() {}
 
-  constructor() {
-    effect(() => {
-      // Load employees when currentPage, pageSize, or searchTerm changes
-      this.loadEmployees();
-    });
-  }
+  ngOnInit(): void {
+    // Initial load
+    this.load(null, 1).subscribe();
 
-  loadEmployees(): void {
-    this.loading.set(true);
-    this.error.set('');
-
-    const params: EmployeeQueryParameters = {
-      pageNumber: this.currentPage(),
-      pageSize: this.pageSize(),
-      searchTerm: this.searchTerm() || undefined
-    };
-
-    this.employeeService.getEmployees(params).subscribe({
-      next: (result) => {
-        this.pagedResult.set(result);
-        this.employees.set(result.items);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set('Failed to load employees. Please try again.');
-        this.loading.set(false);
-        console.error('Error loading employees:', err);
-      }
-    });
-  }
-
-  onSearch(): void {
-    this.currentPage.set(1);
-    this.loadEmployees();
+    // Set up debounced search
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(700),
+        distinctUntilChanged(),
+        tap(() => {
+          this.loading.set(true);
+          this.error.set(null);
+        }),
+        switchMap((term) => this.load(term, 1))
+      )
+      .subscribe();
   }
 
   previousPage(): void {
-    if (this.pagedResult()?.hasPreviousPage) {
-      this.currentPage.update(page => page - 1);
-      this.loadEmployees();
+    const pr = this.pagedResult();
+    if (pr?.hasPreviousPage) {
+      this.load(this.searchControl.value, pr.pageNumber - 1).subscribe();
     }
   }
 
   nextPage(): void {
-    if (this.pagedResult()?.hasNextPage) {
-      this.currentPage.update(page => page + 1);
-      this.loadEmployees();
+    const pr = this.pagedResult();
+    if (pr?.hasNextPage) {
+      this.load(this.searchControl.value, pr.pageNumber + 1).subscribe();
     }
+  }
+
+  private load(term: string | null, pageNumber: number) {
+    const params: EmployeeQueryParameters = {
+      pageNumber: pageNumber,
+      pageSize: this.pageSize,
+      searchTerm: term || undefined,
+    };
+
+    return this.employeeService.getEmployees(params).pipe(
+      tap({
+        next: (result) => {
+          this.employees.set(result.items);
+          this.pagedResult.set(result);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Failed to load employees.');
+          this.loading.set(false);
+        },
+      })
+    );
   }
 
   viewEmployee(id: string): void {
     this.router.navigate(['/employee', id]);
   }
-} 
+}

@@ -1,0 +1,7 @@
+*.dll
+TaxCalculator.Api/bin/*
+TaxCalculator.Api/obj/*
+TaxCalculator.Api/logs/*
+TaxCalculator.Tests/bin/*
+TaxCalculator.Tests/obj/*
+.idea/.idea.TaxCalculator/.idea/*

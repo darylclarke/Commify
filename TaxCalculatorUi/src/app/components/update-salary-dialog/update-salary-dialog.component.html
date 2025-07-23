@@ -1,0 +1,42 @@
+<div
+    class="modal fade show d-block"
+    tabindex="-1"
+    style="background-color: rgba(0, 0, 0, 0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="newSalary" class="form-label">
+              Current Value:
+              {{ currentSalary() | currency : "GBP" }}
+            </label>
+
+            <input [formControl]="newSalary" class="form-control form-control-lg" />
+            @if(newSalary.invalid && (newSalary.dirty || newSalary.touched)) {
+                <div class="invalid-feedback">
+                Salary must be greater than 1, with no decimal places.  
+                </div>
+            }
+        </div>
+        <div class="modal-footer justify-content-start">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="saveSalary()"
+            [disabled]="!newSalary.invalid || updating()">
+            <span
+              *ngIf="updating()"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"></span>
+            {{ updating() ? "Saving..." : "Save" }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaxCalculator.Api.Data;
 
@@ -10,9 +11,11 @@ using TaxCalculator.Api.Data;
 namespace TaxCalculator.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250711151035_AddIndexToEmployee")]
+    partial class AddIndexToEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
@@ -31,7 +34,7 @@ namespace TaxCalculator.Api.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("TEXT")
-                        .HasComputedColumnSql("[FirstName] || ' ' || [LastName]", true);
+                        .HasComputedColumnSql("[FirstName] + ' ' + [LastName]", true);
 
                     b.Property<string>("LastName")
                         .IsRequired()

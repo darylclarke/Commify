@@ -1,7 +1,6 @@
 using Serilog;
 using TaxCalculator.Api.Extensions;
-using TaxCalculator.Api.Services;
-using TaxCalculator.Api.Repositories;
+using TaxCalculator.Api.Middleware;
 
 var logsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "logs");
 if (!Directory.Exists(logsDirectory))
@@ -28,8 +27,8 @@ try
 
     var app = builder.Build();
 
-    app.UseMiddleware<TaxCalculator.Api.Middleware.ExceptionMiddleware>();
-
+    app.UseMiddleware<ExceptionMiddleware>();
+    
     await app.MigrateAndSeedDatabaseAsync();
 
     if (app.Environment.IsDevelopment())

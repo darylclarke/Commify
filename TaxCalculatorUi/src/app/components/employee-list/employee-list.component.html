@@ -2,13 +2,7 @@
   <div class="row mb-4">
     <div class="col-12">
       <div class="mb-3">
-        <input
-          type="text"
-          [ngModel]="searchTerm()"
-          (ngModelChange)="searchTerm.set($event); onSearch()"
-          placeholder="Search employees..."
-          class="form-control form-control-lg"
-        />
+        <input [formControl]="searchControl" placeholder="Search employees..." class="form-control form-control-lg" />
       </div>
     </div>
   </div>
@@ -38,8 +32,8 @@
         <table class="table table-hover mb-0">
           <thead class="table-light">
             <tr>
-              <th scope="col">FirstName</th>
-              <th scope="col">LastName</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
               <th scope="col">Salary</th>
               <th scope="col">View</th>
             </tr>
@@ -51,9 +45,7 @@
               <td>{{ employee.lastName }}</td>
               <td>{{ employee.salary | currency : "GBP" }}</td>
               <td>
-                <button
-                  (click)="viewEmployee(employee.id)"
-                  class="btn btn-primary btn-sm">
+                <button (click)="viewEmployee(employee.id)" class="btn btn-primary btn-sm">
                   View Details
                 </button>
               </td>
@@ -75,23 +67,12 @@
           </p>
           <nav aria-label="Employee pagination">
             <ul class="pagination mb-0">
-              <li
-                class="page-item"
-                [class.disabled]="!pagedResult()?.hasPreviousPage">
-                <button
-                  (click)="previousPage()"
-                  [disabled]="!pagedResult()?.hasPreviousPage"
-                  class="btn btn-link">
-                  <
-                </button>
+              <li class="page-item" [class.disabled]="!pagedResult()?.hasPreviousPage">
+                <button (click)="previousPage()" [disabled]="!pagedResult()?.hasPreviousPage" class="btn btn-link">
+                  < </button>
               </li>
-              <li
-                class="page-item"
-                [class.disabled]="!pagedResult()?.hasNextPage">
-                <button
-                  (click)="nextPage()"
-                  [disabled]="!pagedResult()?.hasNextPage"
-                  class="btn btn-link">
+              <li class="page-item" [class.disabled]="!pagedResult()?.hasNextPage">
+                <button (click)="nextPage()" [disabled]="!pagedResult()?.hasNextPage" class="btn btn-link">
                   >
                 </button>
               </li>

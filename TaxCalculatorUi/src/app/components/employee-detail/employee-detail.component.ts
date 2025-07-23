@@ -6,16 +6,16 @@ import { EmployeeService } from '../../services/employee.service';
 import { TaxService } from '../../services/tax.service';
 import { Employee } from '../../models/employee.model';
 import { TaxCalculationResult } from '../../models/tax-calculation-result.model';
+import { UpdateSalaryDialogComponent } from '../update-salary-dialog/update-salary-dialog.component';
 
 @Component({
   selector: 'app-employee-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UpdateSalaryDialogComponent],
   templateUrl: './employee-detail.component.html'
 })
 export class EmployeeDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private employeeService = inject(EmployeeService);
   private taxService = inject(TaxService);
 
@@ -98,30 +98,30 @@ export class EmployeeDetailComponent implements OnInit {
     this.newSalary.set(0);
   }
 
-  saveSalary(): void {
-    if (!this.canSaveSalary()) {
-      return;
-    }
+  // saveSalary(): void {
+  //   if (!this.canSaveSalary()) {
+  //     return;
+  //   }
 
-    const emp = this.employee();
-    const salary = this.newSalary();
+  //   const emp = this.employee();
+  //   const salary = this.newSalary();
     
-    if (!emp || !salary || salary <= 0) {
-      return;
-    }
+  //   if (!emp || !salary || salary <= 0) {
+  //     return;
+  //   }
 
-    this.updating.set(true);
-    this.employeeService.updateEmployeeSalary(emp.id, salary).subscribe({
-      next: (updatedEmployee) => {
-        this.employee.set(updatedEmployee);
-        this.showEditDialog.set(false);
-        this.updating.set(false);
-      },
-      error: (err) => {
-        this.error.set('Failed to update salary. Please try again.');
-        this.updating.set(false);
-        console.error('Error updating salary:', err);
-      }
-    });
-  }
+  //   this.updating.set(true);
+  //   this.employeeService.updateEmployeeSalary(emp.id, salary).subscribe({
+  //     next: (updatedEmployee) => {
+  //       this.employee.set(updatedEmployee);
+  //       this.showEditDialog.set(false);
+  //       this.updating.set(false);
+  //     },
+  //     error: (err) => {
+  //       this.error.set('Failed to update salary. Please try again.');
+  //       this.updating.set(false);
+  //       console.error('Error updating salary:', err);
+  //     }
+  //   });
+  // }
 }
